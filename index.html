@@ -2,176 +2,133 @@
 <html lang="uk">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Salon krasu — онлайн-запис</title>
   <style>
-    /* ===== БАЗА ===== */
     :root{
-      --bg:#0b0b12;
-      --text:#f6f7fb;
-      --muted:#cfd3df;
+      --bg:#0b0b12; --text:#f6f7fb; --border:rgba(255,255,255,.18);
       --glass:rgba(255,255,255,.10);
-      --border:rgba(255,255,255,.18);
-      --accent1:#7c3aed;   /* фиолет */
-      --accent2:#ff5fa2;   /* розовый */
-      --radius:22px;
-      --shadow:0 10px 28px rgba(0,0,0,.45);
+      --a1:#7c3aed; --a2:#ff5fa2;
+      --radius:22px; --shadow:0 10px 28px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      font-weight: 700; /* жирный везде */
-      color:var(--text);
-      background: var(--bg);
-      overflow:hidden;
+      margin:0; font-family:Arial, Helvetica, sans-serif; font-weight:700; color:var(--text);
+      background:var(--bg);
+      overflow-y:auto; overflow-x:hidden;   /* важное: на телефоне больше не режем контент */
     }
-    /* Фон + лёгкая размытость */
+    /* фон + размытость */
     body::before{
       content:""; position:fixed; inset:0; z-index:-2;
       background:
-        linear-gradient( to bottom right, rgba(12,11,20,.6), rgba(15,10,24,.75) ),
+        linear-gradient( to bottom right, rgba(12,11,20,.60), rgba(15,10,24,.75) ),
         url("https://idei.club/uploads/posts/2022-10/1666966713_4-idei-club-p-saloni-krasoti-v-yevrope-interer-vkontakte-4.jpg")
         center/cover no-repeat;
-      filter: blur(3px);
-      transform: scale(1.03);
+      filter: blur(3px); transform: scale(1.03);
     }
-    /* Лёгкая сеточка сверху */
     body::after{
       content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
       background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
       background-size:3px 3px; mix-blend-mode: overlay; opacity:.35;
     }
 
-    /* ===== ПРЕЛОАДЕР ===== */
-    #loader{
-      position:fixed; inset:0; display:grid; place-items:center; z-index:999;
+    /* прелоадер */
+    #loader{position:fixed; inset:0; display:grid; place-items:center; z-index:999;
       background:linear-gradient(135deg,rgba(8,8,14,.9),rgba(12,10,18,.9));
-      transition:opacity .4s ease, visibility .4s ease;
-    }
+      transition:opacity .4s ease, visibility .4s ease}
     #loader.hide{opacity:0; visibility:hidden}
-    .ring{
-      width:86px; height:86px; border-radius:50%;
-      background:
-        conic-gradient(from 0deg, var(--accent1), var(--accent2), var(--accent1));
+    .ring{width:86px; height:86px; border-radius:50%;
+      background:conic-gradient(from 0deg, var(--a1), var(--a2), var(--a1));
       -webkit-mask: radial-gradient(circle 34px, transparent 31px, #000 32px);
               mask: radial-gradient(circle 34px, transparent 31px, #000 32px);
-      animation: spin 1.2s linear infinite;
-      filter: drop-shadow(0 8px 22px rgba(124,58,237,.45));
-    }
+      animation:spin 1.2s linear infinite; filter: drop-shadow(0 8px 22px rgba(124,58,237,.45))}
     @keyframes spin{to{transform:rotate(1turn)}}
 
-    /* ===== БРЕНД ===== */
+    /* бренд */
     .brand{
-      position:fixed; top:14px; left:16px; z-index:10;
+      position:fixed; z-index:10;
+      top:calc(env(safe-area-inset-top,0px) + 8px);
+      left:calc(env(safe-area-inset-left,0px) + 10px);
       padding:8px 12px; border-radius:12px;
-      background:rgba(10,10,18,.55);
-      border:1px solid var(--border);
-      backdrop-filter: blur(6px);
-      box-shadow:0 6px 18px rgba(0,0,0,.25);
-      color:#fff; letter-spacing:.3px;
+      background:rgba(10,10,18,.55); border:1px solid var(--border);
+      backdrop-filter:blur(6px); box-shadow:0 6px 18px rgba(0,0,0,.25);
+      color:#fff; letter-spacing:.2px;
+      font-size:14px;
     }
     .brand b{font-weight:900}
 
-    /* ===== КАРТОЧКА ЗАПИСИ ===== */
-    .wrap{height:100%; display:grid; place-items:center; padding:22px}
+    /* центрирующая обёртка */
+    .wrap{min-height:100svh; display:grid; place-items:center; padding:22px}
+
+    /* карточка записи */
     .card{
-      width:min(940px, 96vw);
-      background:var(--glass);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      width:min(940px, 96vw);   /* на телефоне почти как десктоп */
+      background:var(--glass); border:1px solid var(--border);
+      border-radius:var(--radius); box-shadow:var(--shadow);
       backdrop-filter: blur(14px) saturate(130%);
       padding:26px;
     }
-    h1{
-      margin:0 0 18px;
-      font-size:36px; line-height:1.15;
-      letter-spacing:.2px;
-      display:flex; align-items:center; gap:10px;
-    }
-    h1 .chip{
-      padding:3px 9px; border-radius:999px; font-size:14px;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2)); color:#fff;
-    }
+    h1{margin:0 0 18px; font-size:36px; line-height:1.15; letter-spacing:.2px; display:flex; align-items:center; gap:10px}
+    .chip{padding:3px 9px; border-radius:999px; font-size:14px; background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff}
 
-    /* Сетка формы */
+    /* форма: СТАБИЛЬНЫЕ ДВЕ КОЛОНКИ */
     .form{display:grid; grid-template-columns:1fr 1fr; gap:16px}
     .form .wide{grid-column:1/-1}
 
     label{margin-bottom:6px; display:block; color:#fff}
 
-    /* Поля. Делаем одинаковый внешний вид на всех устройствах */
+    /* поля — единый вид на всех устройствах */
     input, select{
-      width:100%;
-      font-family: Arial, Helvetica, sans-serif;
-      font-weight: 700;         /* жирный текст и в инпутах */
-      font-size:16px;
-      color:#101114;            /* ЧЁРНЫЙ текст внутри полей для контраста */
-      background:#ffffff;       /* СВЕТЛЫЙ фон — выпадайка не сольётся */
+      width:100%; font-family:Arial, Helvetica, sans-serif; font-weight:700;
+      font-size:16px; color:#101114; background:#fff;
       border:1px solid #d7d9e2; border-radius:14px;
-      padding:13px 14px; outline:none;
-      transition: box-shadow .15s ease, border-color .15s ease, transform .02s ease;
-      box-shadow: inset 0 1px 0 rgba(0,0,0,.04);
-      appearance: none;         /* единый вид */
+      padding:13px 14px; outline:none; transition:border-color .15s, box-shadow .15s, transform .02s;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,.04); appearance:none;
     }
-    input:focus, select:focus{
-      border-color:#b7b9c6; box-shadow:0 0 0 3px rgba(124,58,237,.25);
-    }
-    input::placeholder{color:#7a7e8e; font-weight:700} /* жирный плейсхолдер */
-
-    /* Стрелочка у select */
+    input::placeholder{color:#7a7e8e; font-weight:700}
+    input:focus, select:focus{border-color:#b7b9c6; box-shadow:0 0 0 3px rgba(124,58,237,.25)}
     .select-wrap{position:relative}
-    .select-wrap::after{
-      content:"▾"; position:absolute; right:12px; top:50%; translate:0 -50%;
-      color:#444; pointer-events:none; font-size:16px;
-    }
-    /* Цвет опций в раскрытом списке */
+    .select-wrap::after{content:"▾"; position:absolute; right:12px; top:50%; translate:0 -50%; color:#444; pointer-events:none; font-size:16px}
     option{color:#111; background:#fff; font-weight:700}
 
-    /* Сервисная строка под select услуги */
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
     .info{margin-top:6px; color:#fff; font-size:14px}
 
-    /* Дата/время в одну строку на десктопе */
-    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-
-    /* Кнопка */
     .btn{
-      display:inline-grid; place-items:center;
-      width:100%; padding:14px 16px;
-      border-radius:14px; border:1px solid transparent;
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      color:#fff; font-size:16px; letter-spacing:.2px; cursor:pointer;
+      display:inline-grid; place-items:center; width:100%;
+      padding:14px 16px; border-radius:14px; border:1px solid transparent;
+      background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff;
+      font-size:16px; letter-spacing:.2px; cursor:pointer;
       box-shadow:0 8px 24px rgba(124,58,237,.35);
-      transition: transform .06s ease, filter .2s ease;
-    }
+      transition:transform .06s, filter .2s}
     .btn:active{transform:translateY(1px)}
     .btn:hover{filter:brightness(1.05)}
 
-    /* Тост */
-    .toast{
-      position:fixed; right:18px; bottom:18px; z-index:50;
-      background:rgba(20,20,28,.92); color:#fff;
-      border:1px solid var(--border); border-radius:14px;
-      padding:12px 14px; box-shadow:var(--shadow);
-      opacity:0; translate:0 14px; transition:all .25s ease;
-    }
+    .toast{position:fixed; right:18px; bottom:18px; z-index:50; background:rgba(20,20,28,.92); color:#fff;
+      border:1px solid var(--border); border-radius:14px; padding:12px 14px; box-shadow:var(--shadow);
+      opacity:0; translate:0 14px; transition:all .25s ease}
     .toast.show{opacity:1; translate:0 0}
 
-    /* Адаптив */
-    @media (max-width:760px){
-      h1{font-size:28px}
-      .form{grid-template-columns:1fr}
-      .grid-2{grid-template-columns:1fr}
+    /* ---------- МОБИЛЬНАЯ ПРАВКА (сохраняем 2 колонки, но уменьшаем UI) ---------- */
+    @media (max-width:480px){
+      .brand{font-size:12px; padding:6px 9px}
+      .card{width:96vw; padding:16px; border-radius:18px}
+      h1{font-size:26px; margin-bottom:14px}
+      .form{grid-template-columns:1fr 1fr; gap:12px}
+      .grid-2{grid-template-columns:1fr 1fr; gap:12px}
+      input, select{font-size:14px; padding:11px 12px; border-radius:12px}
+      .btn{padding:12px 14px; font-size:15px; border-radius:12px}
+      .select-wrap::after{right:10px}
+      .info{font-size:13px}
     }
   </style>
 </head>
 <body>
-  <!-- Прелоадер -->
+  <!-- прелоадер -->
   <div id="loader"><div class="ring" aria-label="loading"></div></div>
 
-  <!-- Бренд слева в углу -->
+  <!-- бренд -->
   <div class="brand"><b>Salon krasu</b> (ваша назва)</div>
 
   <main class="wrap">
@@ -224,6 +181,7 @@
           <button class="btn" type="submit">Підтвердити запис</button>
         </div>
       </form>
+
       <div id="summary" class="info" style="margin-top:10px"></div>
     </section>
   </main>
@@ -231,33 +189,32 @@
   <div id="toast" class="toast">Готово!</div>
 
   <script>
-    /* ===== ДАНІ ===== */
-    const SERVICES = [
-      {id:"mani",   name:"Манікюр класичний 💅",  duration_min:60, price:500},
-      {id:"gel",    name:"Покриття гель-лаком 💖",duration_min:75, price:700},
-      {id:"brows",  name:"Архітектура брів 👁️",  duration_min:45, price:450},
-      {id:"hair",   name:"Стрижка / укладка 💇‍♀️", duration_min:60, price:650},
-      {id:"facial", name:"Догляд за обличчям ✨", duration_min:75, price:900},
+    // ---- данные ----
+    const SERVICES=[
+      {id:"mani", name:"Манікюр класичний 💅",  duration_min:60, price:500},
+      {id:"gel",  name:"Покриття гель-лаком 💖", duration_min:75, price:700},
+      {id:"brows",name:"Архітектура брів 👁️",  duration_min:45, price:450},
+      {id:"hair", name:"Стрижка / укладка 💇‍♀️", duration_min:60, price:650},
+      {id:"facial",name:"Догляд за обличчям ✨", duration_min:75, price:900},
     ];
-    const MASTERS = { anna:"Анна — манікюр/брови", olena:"Олена — стрижки/догляд" };
-    const TIME_SLOTS = ["10:00","11:30","13:00","15:00","16:30","18:00"];
-    const STORAGE_ALL = "demo_bookings_all";
-    const STORAGE_MINE = "demo_bookings_mine";
+    const MASTERS={anna:"Анна — манікюр/брови", olena:"Олена — стрижки/догляд"};
+    const TIME_SLOTS=["10:00","11:30","13:00","15:00","16:30","18:00"];
+    const KEY_ALL="demo_bookings_all", KEY_MINE="demo_bookings_mine";
 
-    /* ===== УТИЛІТИ ===== */
-    const $ = s => document.querySelector(s);
-    function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2000); }
-    function readAll(){ try{return JSON.parse(localStorage.getItem(STORAGE_ALL)||"[]")}catch{ return [] } }
-    function writeAll(a){ localStorage.setItem(STORAGE_ALL, JSON.stringify(a)); }
-    function readMine(){ try{return JSON.parse(localStorage.getItem(STORAGE_MINE)||"[]")}catch{ return [] } }
-    function writeMine(a){ localStorage.setItem(STORAGE_MINE, JSON.stringify(a)); }
-    function todayISO(){ return new Date().toISOString().slice(0,10); }
-    function fmtUAH(n){ return `${n} грн`; }
+    // ---- утилиты ----
+    const $=s=>document.querySelector(s);
+    function toast(t){const el=$("#toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2000)}
+    function readAll(){try{return JSON.parse(localStorage.getItem(KEY_ALL)||"[]")}catch{return[]}}
+    function writeAll(a){localStorage.setItem(KEY_ALL,JSON.stringify(a))}
+    function readMine(){try{return JSON.parse(localStorage.getItem(KEY_MINE)||"[]")}catch{return[]}}
+    function writeMine(a){localStorage.setItem(KEY_MINE,JSON.stringify(a))}
+    function todayISO(){return new Date().toISOString().slice(0,10)}
+    function fmtUAH(n){return `${n} грн`}
 
-    /* ===== ПРЕЛОАДЕР ===== */
-    window.addEventListener("load", ()=> setTimeout(()=> $("#loader").classList.add("hide"), 350));
+    // прелоадер
+    window.addEventListener("load",()=>setTimeout(()=>$("#loader").classList.add("hide"),350));
 
-    /* ===== ИНИЦИАЛИЗАЦИЯ ФОРМЫ ===== */
+    // элементы
     const serviceSel=$("#service"), serviceInfo=$("#serviceInfo"),
           masterSel=$("#master"), dateInp=$("#date"), timeSel=$("#time"),
           phoneInp=$("#phone"), nameInp=$("#name"), summary=$("#summary");
@@ -265,81 +222,61 @@
     // услуги
     SERVICES.forEach(s=>{
       const o=document.createElement("option");
-      o.value=s.id; o.textContent = `${s.name} — ${fmtUAH(s.price)}`;
+      o.value=s.id; o.textContent=`${s.name} — ${fmtUAH(s.price)}`;
       serviceSel.appendChild(o);
     });
-
     function updateServiceInfo(){
-      const s = SERVICES.find(x=>x.id===serviceSel.value);
-      serviceInfo.textContent = s ? `Тривалість: ${s.duration_min} хв • Ціна: ${fmtUAH(s.price)}` : "";
+      const s=SERVICES.find(x=>x.id===serviceSel.value);
+      serviceInfo.textContent=s?`Тривалість: ${s.duration_min} хв • Ціна: ${fmtUAH(s.price)}`:"";
     }
-    serviceSel.addEventListener("change", updateServiceInfo);
-    updateServiceInfo();
+    serviceSel.addEventListener("change",updateServiceInfo); updateServiceInfo();
 
-    // дата/час
-    dateInp.value = todayISO();
+    // дата/время
+    dateInp.value=todayISO();
     function generateSlots(dateISO){
-      const busy = new Set(readAll().filter(b=>b.date===dateISO).map(b=>`${b.time}-${b.master}`));
+      const busy=new Set(readAll().filter(b=>b.date===dateISO).map(b=>`${b.time}-${b.master}`));
       timeSel.innerHTML="";
       TIME_SLOTS.forEach(t=>{
-        const key = `${t}-${masterSel.value}`;
-        const opt=document.createElement("option");
-        opt.value=t; opt.textContent=t;
-        if(busy.has(key)){ opt.disabled=true; opt.textContent=`${t} — зайнято`; }
+        const key=`${t}-${masterSel.value}`; const opt=document.createElement("option");
+        opt.value=t; opt.textContent=t; if(busy.has(key)){opt.disabled=true; opt.textContent=`${t} — зайнято`;}
         timeSel.appendChild(opt);
       });
-      // выбрать первый свободный
-      const free=[...timeSel.options].find(o=>!o.disabled);
-      if(free) timeSel.value=free.value;
+      const free=[...timeSel.options].find(o=>!o.disabled); if(free) timeSel.value=free.value;
     }
     generateSlots(dateInp.value);
-    masterSel.addEventListener("change", ()=>generateSlots(dateInp.value));
-    dateInp.addEventListener("change", ()=>generateSlots(dateInp.value));
+    masterSel.addEventListener("change",()=>generateSlots(dateInp.value));
+    dateInp.addEventListener("change",()=>generateSlots(dateInp.value));
 
-    // Маска телефона: приводим к E.164 (+ и цифры), единый вид на всех
-    phoneInp.addEventListener("input", ()=>{
-      let v = phoneInp.value.replace(/[^\d+]/g,"");      // оставляем + и цифры
-      if(v[0] !== "+") v = "+" + v.replace(/\+/g,"");    // всегда начинаем с +
-      v = "+" + v.slice(1).replace(/\D/g,"");            // затем только цифры
-      phoneInp.value = v;
+    // телефон: формат E.164 (+ и 10–15 цифр), одинаково на всех телефонах
+    phoneInp.addEventListener("input",()=>{
+      let v=phoneInp.value.replace(/[^\d+]/g,"");
+      if(v[0]!=="+") v="+"+v.replace(/\+/g,"");
+      v="+"+v.slice(1).replace(/\D/g,"");
+      phoneInp.value=v;
     });
+    const validPhone=v=>/^\+\d{10,15}$/.test(v);
 
-    function validPhone(v){
-      // + и 10–15 цифр
-      return /^\+\d{10,15}$/.test(v);
-    }
-
-    // submit
-    $("#bookForm").addEventListener("submit",(e)=>{
+    // сабмит
+    $("#bookForm").addEventListener("submit",e=>{
       e.preventDefault();
-      const name = nameInp.value.trim();
-      const phone= phoneInp.value.trim();
-      if(!validPhone(phone)){ toast("Невірний номер: використайте формат +XXXXXXXXXX"); phoneInp.focus(); return; }
+      const name=nameInp.value.trim();
+      const phone=phoneInp.value.trim();
+      if(!validPhone(phone)){toast("Невірний номер: формат +XXXXXXXXXX"); phoneInp.focus(); return;}
+      const srv=SERVICES.find(s=>s.id===serviceSel.value);
+      const master=masterSel.value, date=dateInp.value, time=timeSel.value;
 
-      const srv = SERVICES.find(s=>s.id===serviceSel.value);
-      const master = masterSel.value;
-      const date = dateInp.value;
-      const time = timeSel.value;
+      const rec={id:Date.now().toString(36), name, phone,
+        service_id:srv.id, service_name:srv.name, price:srv.price,
+        master, master_name:MASTERS[master], date, time, created_at:new Date().toISOString()};
 
-      const rec = {
-        id: Date.now().toString(36),
-        name, phone,
-        service_id: srv.id, service_name: srv.name, price: srv.price,
-        master, master_name: MASTERS[master],
-        date, time, created_at: new Date().toISOString()
-      };
+      const all=readAll(); all.push(rec); writeAll(all);
+      const mine=readMine(); mine.push(rec); writeMine(mine);
 
-      const all = readAll(); all.push(rec); writeAll(all);
-      const mine= readMine(); mine.push(rec); writeMine(mine);
-
-      summary.textContent = `✅ Запис підтверджено: ${srv.name} з ${MASTERS[master]} • ${date} ${time} • ${srv.price} грн`;
+      summary.textContent=`✅ Запис підтверджено: ${srv.name} з ${MASTERS[master]} • ${date} ${time} • ${srv.price} грн`;
       toast("Запис збережено 🎉");
       generateSlots(date);
-      e.target.reset();
-      serviceSel.value=srv.id; updateServiceInfo();
-      dateInp.value=date; generateSlots(date);
+      e.target.reset(); serviceSel.value=srv.id; updateServiceInfo(); dateInp.value=date; generateSlots(date);
     });
   </script>
 </body>
 </html>
-
