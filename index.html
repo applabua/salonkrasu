@@ -12,21 +12,22 @@
       --glass:rgba(255,255,255,.10);
       --a1:#7c3aed; --a2:#ff5fa2;
       --radius:22px; --shadow:0 10px 28px rgba(0,0,0,.45);
-      --vh:1vh;                 /* фиксируем высоту экрана на момент загрузки */
+      --vh:1vh;
+      --field-h: 52px; /* ЕДИНАЯ высота всех полей */
     }
     *{box-sizing:border-box}
     html,body{
       height:100%;
-      overscroll-behavior:none;     /* без резинового скролла */
+      overscroll-behavior:none;
       -webkit-text-size-adjust:100%;
       touch-action:manipulation;
     }
     body{
       margin:0; font-family:Arial, Helvetica, sans-serif; font-weight:700; color:var(--text);
       background:var(--bg);
-      overflow:hidden;              /* ничего не двигается */
+      overflow:hidden; /* ничего не двигается и не скроллится */
     }
-    /* фон + размытость */
+    /* Фон с блюром */
     body::before{
       content:""; position:fixed; inset:0; z-index:-2;
       background:
@@ -41,7 +42,7 @@
       background-size:3px 3px; mix-blend-mode: overlay; opacity:.35;
     }
 
-    /* прелоадер */
+    /* Прелоадер */
     #loader{position:fixed; inset:0; display:grid; place-items:center; z-index:999;
       background:linear-gradient(135deg,rgba(8,8,14,.9),rgba(12,10,18,.9));
       transition:opacity .4s ease, visibility .4s ease}
@@ -53,7 +54,7 @@
       animation:spin 1.2s linear infinite; filter: drop-shadow(0 8px 22px rgba(124,58,237,.45))}
     @keyframes spin{to{transform:rotate(1turn)}}
 
-    /* бренд */
+    /* Бренд-бейдж с учётом safe-area */
     .brand{
       position:fixed; z-index:10;
       top:calc(env(safe-area-inset-top,0px) + 8px);
@@ -65,41 +66,49 @@
     }
     .brand b{font-weight:900}
 
-    /* центрирующая обёртка — ВСЕГДА по центру и фиксировано */
+    /* Центрирующая обёртка — фиксированно и ПО ЦЕНТРУ всегда */
     .wrap{
       position:fixed; inset:0; z-index:1;
       display:grid; place-items:center;
-      height:calc(var(--vh) * 100);   /* фиксированная высота, не меняем при клавиатуре */
-      padding:22px;
+      height:calc(var(--vh) * 100);
+      padding-left: max(22px, env(safe-area-inset-left));
+      padding-right: max(22px, env(safe-area-inset-right));
+      padding-top: 22px; padding-bottom: 22px;
     }
 
-    /* карточка записи */
+    /* Карточка записи: ни внутреннего скролла, ни смещений */
     .card{
-      width:min(940px, 92vw);
-      max-height:calc(100% - 32px);   /* если экран мал — прокрутка внутри карточки */
+      display:block;
+      margin:0 auto;                   /* доп. страховка центровки */
+      max-width:940px;
+      width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 44px); /* ровные поля слева/справа */
       background:var(--glass); border:1px solid var(--border);
       border-radius:var(--radius); box-shadow:var(--shadow);
       backdrop-filter: blur(14px) saturate(130%);
       padding:26px;
-      overflow:auto;                  /* внутренний скролл по необходимости */
+      overflow:visible;                 /* без внутреннего скролла */
     }
     h1{margin:0 0 18px; font-size:36px; line-height:1.15; letter-spacing:.2px; display:flex; align-items:center; gap:10px}
     .chip{padding:3px 9px; border-radius:999px; font-size:14px; background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff}
 
-    /* форма — стабильно ДВЕ КОЛОНКИ на всех устройствах */
+    /* Форма — стабильно две колонки */
     .form{display:grid; grid-template-columns:1fr 1fr; gap:16px}
     .form .wide{grid-column:1/-1}
 
     label{margin-bottom:6px; display:block; color:#fff}
 
-    /* поля — единый вид */
+    /* Поля — ОДИНАКОВАЯ ВЫСОТА и вид */
     input, select{
-      width:100%; font-family:Arial, Helvetica, sans-serif; font-weight:700;
-      font-size:16px;                 /* >=16px — без авто-зума в iOS */
+      width:100%;
+      height:var(--field-h);
+      font-family:Arial, Helvetica, sans-serif; font-weight:700; font-size:16px; /* >=16px — без авто-зума */
       color:#101114; background:#fff;
       border:1px solid #d7d9e2; border-radius:14px;
-      padding:13px 14px; outline:none; transition:border-color .15s, box-shadow .15s, transform .02s;
-      box-shadow: inset 0 1px 0 rgba(0,0,0,.04); appearance:none;
+      padding:0 14px; outline:none;
+      transition:border-color .15s, box-shadow .15s, transform .02s;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,.04);
+      appearance:none;
+      line-height: calc(var(--field-h) - 2px);
     }
     input::placeholder{color:#7a7e8e; font-weight:700}
     input:focus, select:focus{border-color:#b7b9c6; box-shadow:0 0 0 3px rgba(124,58,237,.25)}
@@ -125,28 +134,29 @@
       opacity:0; translate:0 14px; transition:all .25s ease}
     .toast.show{opacity:1; translate:0 0}
 
-    /* компактные правки для очень узких экранов, но всё равно 2 колонки */
+    /* Компактные правки для очень узких/низких экранов, но без изменения сетки */
     @media (max-width:480px){
       .brand{font-size:12px; padding:6px 9px}
-      .card{width:94vw; padding:16px; border-radius:18px}
-      h1{font-size:26px; margin-bottom:14px}
-      .form{gap:12px}
-      .grid-2{gap:12px}
-      input, select{font-size:16px; padding:11px 12px; border-radius:12px}
-      .btn{padding:12px 14px; font-size:15px; border-radius:12px}
-      .select-wrap::after{right:10px}
+      .card{padding:18px; border-radius:18px}
+      h1{font-size:28px; margin-bottom:14px}
+      :root{ --field-h: 50px; }
       .info{font-size:13px}
+    }
+    @media (max-height:640px){
+      :root{ --field-h: 46px; }
+      .card{padding:16px}
+      h1{font-size:26px}
     }
   </style>
 </head>
 <body>
-  <!-- прелоадер -->
+  <!-- Прелоадер -->
   <div id="loader"><div class="ring" aria-label="loading"></div></div>
 
-  <!-- бренд -->
+  <!-- Бренд -->
   <div class="brand"><b>Salon krasu</b> (ваша назва)</div>
 
-  <!-- ВЫСЕЧЕННАЯ по центру обёртка -->
+  <!-- Центрированное окно -->
   <main class="wrap">
     <section class="card">
       <h1>Онлайн-запис <span class="chip">демо</span></h1>
@@ -205,14 +215,13 @@
   <div id="toast" class="toast">Готово!</div>
 
   <script>
-    /* ---- фиксируем высоту экрана один раз, чтобы не «прыгало» при клавиатуре ---- */
+    /* Фиксируем высоту экрана один раз — никаких «прыжков» при клавиатуре */
     (function lockVh(){
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
-      // намеренно НЕ пересчитываем на resize — чтобы ничего не сдвигалось
     })();
 
-    /* ---- данные ---- */
+    /* Данные */
     const SERVICES=[
       {id:"mani", name:"Манікюр класичний 💅",  duration_min:60, price:500},
       {id:"gel",  name:"Покриття гель-лаком 💖", duration_min:75, price:700},
@@ -233,14 +242,14 @@
     function todayISO(){return new Date().toISOString().slice(0,10)}
     function fmtUAH(n){return `${n} грн`}
 
-    /* прелоадер */
+    /* Прелоадер */
     window.addEventListener("load",()=>setTimeout(()=>$("#loader").classList.add("hide"),350));
 
     const serviceSel=$("#service"), serviceInfo=$("#serviceInfo"),
           masterSel=$("#master"), dateInp=$("#date"), timeSel=$("#time"),
           phoneInp=$("#phone"), nameInp=$("#name"), summary=$("#summary");
 
-    // услуги
+    /* Услуги */
     SERVICES.forEach(s=>{
       const o=document.createElement("option");
       o.value=s.id; o.textContent=`${s.name} — ${fmtUAH(s.price)}`;
@@ -252,7 +261,7 @@
     }
     serviceSel.addEventListener("change",updateServiceInfo); updateServiceInfo();
 
-    // дата/время
+    /* Дата/время */
     dateInp.value=todayISO();
     function generateSlots(dateISO){
       const busy=new Set(readAll().filter(b=>b.date===dateISO).map(b=>`${b.time}-${b.master}`));
@@ -268,7 +277,7 @@
     masterSel.addEventListener("change",()=>generateSlots(dateInp.value));
     dateInp.addEventListener("change",()=>generateSlots(dateInp.value));
 
-    // телефон: формат E.164 (+ и 10–15 цифр), одинаково на всех телефонах
+    /* Телефон: формат E.164 (+ и 10–15 цифр) */
     phoneInp.addEventListener("input",()=>{
       let v=phoneInp.value.replace(/[^\d+]/g,"");
       if(v[0]!=="+") v="+"+v.replace(/\+/g,"");
@@ -277,7 +286,7 @@
     });
     const validPhone=v=>/^\+\d{10,15}$/.test(v);
 
-    // сабмит
+    /* Сабмит */
     $("#bookForm").addEventListener("submit",e=>{
       e.preventDefault();
       const name=nameInp.value.trim();
